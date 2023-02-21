@@ -35,7 +35,7 @@
 #include <SDL2_framerate.h>
 #include <SDL2_gfxPrimitives.h>
 
-#include "grid.h"
+#include "stack.h"
 
 
 bool Game_start(SDL_Renderer *renderer, int w, int h);
