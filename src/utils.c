@@ -47,6 +47,8 @@ const SDL_Color COLOR_ORANGE        = {255, 133, 0, 255};
 const SDL_Color COLOR_PINK          = {255, 0, 206, 255};
 const SDL_Color COLOR_VIOLET        = {145, 0, 255, 255};
 
+const SDL_Color SUIT_TO_COLOR[5]    = {COLOR_WHITE, COLOR_PINK, COLOR_BLUE, COLOR_VIOLET, COLOR_ORANGE};
+
 void Utils_setBackgroundColor(SDL_Renderer *renderer, SDL_Color color)
 {
     // Initialize renderer color

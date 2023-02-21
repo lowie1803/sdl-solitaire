@@ -17,11 +17,14 @@ bool Card_initDisplay(Card *card)
 
   card->rect.w = CARD_WIDTH;
   card->rect.h = CARD_HEIGHT;
-  card->border.w = CARD_WIDTH;
-  card->border.h = CARD_HEIGHT;
-  card->rectColor.r = rand() % 256;
-  card->rectColor.g = rand() % 256;
-  card->rectColor.b = rand() % 256;
+  card->border.w = CARD_WIDTH + CARD_BORDER_WIDTH * 2;
+  card->border.h = CARD_HEIGHT + CARD_BORDER_WIDTH * 2;
+  card->rectColor.r = SUIT_TO_COLOR[card->_suit].r / card->_rank;
+  card->rectColor.g = SUIT_TO_COLOR[card->_suit].g / card->_rank;
+  card->rectColor.b = SUIT_TO_COLOR[card->_suit].b / card->_rank;
+  card->borderColor.r = COLOR_WHITE.r;
+  card->borderColor.g = COLOR_WHITE.g;
+  card->borderColor.b = COLOR_WHITE.b;
   return true;
 }
 
@@ -52,8 +55,10 @@ bool Stack_initDisplay(Stack *stack)
 
 void Stack_initCardDisplay(Stack *stack, Card *card, int offset) {
   Card_initDisplay(card);
-  card->rect.x = stack->x_coordinate + offset * STACK_DELTA;
-  card->rect.y = stack->y_coordinate;
+  card->rect.x = stack->x_coordinate;
+  card->rect.y = stack->y_coordinate + offset * STACK_DELTA;
+  card->border.x = card->rect.x - CARD_BORDER_WIDTH;
+  card->border.y = card->rect.y - CARD_BORDER_WIDTH;
 }
 
 void Stack_render(Stack *stack, SDL_Renderer *renderer) 

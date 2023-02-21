@@ -17,6 +17,7 @@ enum rank {
 #define MAX_CARDS_PER_STACK (52)
 #define CARD_HEIGHT (60)
 #define CARD_WIDTH (40)
+#define CARD_BORDER_WIDTH (3)
 #define STACK_DELTA (20)
 
 // const SDL_Color EMPTY_STACK_BORDER = {255, 255, 255, 255};

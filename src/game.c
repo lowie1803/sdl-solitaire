@@ -7,16 +7,11 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
     sample1._rank = EIGHT;
     sample2._suit = DIAMOND;
     sample2._rank = ACE;
-    //TODO:
-    // - Display 2 stacks of cards.
-    // - Move a card on top of stack to the other one.
 
     // Set stack coordinates
     _stack.x_coordinate = 50;
     _stack.y_coordinate = 50;
-    fprintf(stderr, "init good");
     Stack_pushCard(&_stack, &sample1);
-    fprintf(stderr, "push good");
     Stack_pushCard(&_stack, &sample2);
 
     if(!Stack_initDisplay(&_stack))
@@ -61,7 +56,7 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
 
         // Show message
         stringRGBA(renderer, 20, 20,
-                   "This is a falling brick < Press RIGTH and LEFT to move >",
+                   "This is the Solitaire game display model",
                    COLOR_LIGHT_GRAY.r, COLOR_LIGHT_GRAY.g, COLOR_LIGHT_GRAY.b, COLOR_LIGHT_GRAY.a);
 
         // Update screen
