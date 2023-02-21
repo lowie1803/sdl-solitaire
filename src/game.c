@@ -1,24 +1,24 @@
 #include "game.h"
 
 bool Game_start(SDL_Renderer *renderer, int w, int h) {
-    Stack _stack = {0};
-    Card sample1, sample2;
-    sample1._suit = HEART;
-    sample1._rank = EIGHT;
-    sample2._suit = DIAMOND;
-    sample2._rank = ACE;
+    Stack fannedPiles[7] = {0};
+    for (int pid = 0; pid < 7; pid++) {
+        fannedPiles[pid].x_coordinate = FIRST_PILE_X + pid * PILE_DISTANCE;
+        fannedPiles[pid].y_coordinate = FIRST_PILE_Y;
+        for (int cid = 0; cid <= pid; cid++) {
+            Card temp;
+            temp._suit = rand() % 4 + 1;
+            temp._rank = rand() % 13 + 1;
+            Stack_pushCard(&fannedPiles[pid], &temp);
+        }
 
-    // Set stack coordinates
-    _stack.x_coordinate = 50;
-    _stack.y_coordinate = 50;
-    Stack_pushCard(&_stack, &sample1);
-    Stack_pushCard(&_stack, &sample2);
-
-    if(!Stack_initDisplay(&_stack))
-    {
-        fprintf(stderr, "Stack fail to initialize !\n");
-        fprintf(stderr, "%d%d", w, h);
-        return false;
+        if(!Stack_initDisplay(&fannedPiles[pid]))
+        {
+            fprintf(stderr, "Stack fail to initialize !\n");
+            fprintf(stderr, "%d%d\n", w, h);
+            fprintf(stderr, "%d\n", pid);
+            return false;
+        }
     }
 
     // Initialize framerate manager : 30 FPS
@@ -52,7 +52,9 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
         Utils_setBackgroundColor(renderer, COLOR_DARK_GRAY);
 
         // Render grid
-        Stack_render(&_stack, renderer);
+        for (int pid = 0; pid < 7; pid++) {
+            Stack_render(&fannedPiles[pid], renderer);
+        }
 
         // Show message
         stringRGBA(renderer, 20, 20,

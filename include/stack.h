@@ -15,12 +15,14 @@ enum rank {
 };
 
 #define MAX_CARDS_PER_STACK (52)
-#define CARD_HEIGHT (60)
-#define CARD_WIDTH (40)
+#define CARD_HEIGHT (90)
+#define CARD_WIDTH (60)
 #define CARD_BORDER_WIDTH (3)
 #define STACK_DELTA (20)
 
-// const SDL_Color EMPTY_STACK_BORDER = {255, 255, 255, 255};
+#define FIRST_PILE_X (80)
+#define FIRST_PILE_Y (200)
+#define PILE_DISTANCE (95)
 
 struct Card
 {
