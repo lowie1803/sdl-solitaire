@@ -5,6 +5,27 @@
 // - move a card from one stack to other
 // - move a chain of card from one stack to other
 
+Card* locateSelectedCard(Stack* fannedPiles, int atX, int atY) {
+    // Card* res = 
+    for (int pid = 0; pid < 7; pid++) {
+        int pileX = fannedPiles[pid].x_coordinate;
+        // fprintf(stderr, "%d\n", pid);
+        if (atX < pileX || atX > pileX + CARD_WIDTH) {
+            continue;
+        }
+
+        for (int cid = fannedPiles[pid].cards_count - 1; cid > -1; cid--) {
+            Card *c = &fannedPiles[pid]._cards[cid];
+            if (atY < c->rect.y || atY > c->rect.y + CARD_HEIGHT) {
+                continue;
+            }
+
+            return c;
+        }
+    }
+    return NULL;
+}
+
 bool Game_start(SDL_Renderer *renderer, int w, int h) {
     Stack fannedPiles[7] = {0};
     for (int pid = 0; pid < 7; pid++) {
@@ -53,29 +74,14 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
                 quit = true;
                 break;
             } else if (e.type == SDL_MOUSEBUTTONDOWN) {
-                if (selectedCard != NULL) Card_deselect(selectedCard);
-                selectedCard = NULL;
                 SDL_MouseButtonEvent mbe = e.button;
-                int x = mbe.x, y = mbe.y;
-
-                // locate newly selected card:
-                for (int pid = 0; pid < 7; pid++) {
-                    int pileX = fannedPiles[pid].x_coordinate;
-                    // fprintf(stderr, "%d\n", pid);
-                    if (x < pileX || x > pileX + CARD_WIDTH) {
-                        continue;
-                    }
-
-                    for (int cid = fannedPiles[pid].cards_count - 1; cid > -1; cid--) {
-                        Card *c = &fannedPiles[pid]._cards[cid];
-                        if (y < c->rect.y || y > c->rect.y + CARD_HEIGHT) {
-                            continue;
-                        }
-
-                        Card_select(c);
-                        selectedCard = c;
-                        break;
-                    }
+                if (selectedCard != NULL) Card_deselect(selectedCard);
+                if (mbe.button == SDL_BUTTON_LEFT) {
+                    // locate newly selected card:
+                    selectedCard = locateSelectedCard(fannedPiles, mbe.x, mbe.y);
+                    if (selectedCard != NULL) Card_select(selectedCard);
+                } else if (mbe.button == SDL_BUTTON_RIGHT) {
+                    fprintf(stderr, "Right click\n");
                 }
             }
         }

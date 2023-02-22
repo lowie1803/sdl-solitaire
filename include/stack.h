@@ -18,7 +18,7 @@ enum rank {
 #define CARD_HEIGHT (90)
 #define CARD_WIDTH (60)
 #define CARD_BORDER_WIDTH (3)
-#define STACK_DELTA (20)
+#define STACK_DELTA (25)
 
 #define FIRST_PILE_X (80)
 #define FIRST_PILE_Y (200)
