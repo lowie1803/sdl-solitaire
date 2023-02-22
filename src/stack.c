@@ -97,3 +97,25 @@ void Stack_renderCard(Card *card, SDL_Renderer *renderer) {
   );
   SDL_RenderFillRect(renderer, &(card->rect));
 }
+
+void Card_select(Card *card) {
+  if (card == NULL) {
+    fprintf(stderr, "Selected NULL value\n");
+    return;
+  }
+  card->isSelected = true;
+  card->borderColor.r = COLOR_GREEN.r;
+  card->borderColor.g = COLOR_GREEN.g;
+  card->borderColor.b = COLOR_GREEN.b;
+}
+
+void Card_deselect(Card *card) {
+  if (card == NULL) {
+    fprintf(stderr, "Deselected NULL value\n");
+    return;
+  }
+  card->isSelected = false;
+  card->borderColor.r = COLOR_WHITE.r;
+  card->borderColor.g = COLOR_WHITE.g;
+  card->borderColor.b = COLOR_WHITE.b;
+}

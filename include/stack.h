@@ -28,6 +28,7 @@ struct Card
 {
   enum suit _suit;
   enum rank _rank;
+  bool isSelected;
 
   SDL_Rect rect;
   SDL_Color rectColor;
@@ -55,5 +56,8 @@ bool Stack_initDisplay(Stack *stack);
 
 void Stack_render(Stack *stack, SDL_Renderer *renderer);
 void Stack_renderCard(Card *card, SDL_Renderer *renderer);
+
+void Card_select(Card *card);
+void Card_deselect(Card *card);
 
 #endif
