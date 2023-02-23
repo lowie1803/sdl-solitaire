@@ -1,9 +1,8 @@
 #include "game.h"
 
 // TODO:
-// - Implement deck
-// - Implement drawable stacks
-// - Implement card-draw features.
+// - Implement stock
+// - Implement game logic
 
 // This library handles game logic.
 Card* Game_locateCard(Game* game, int atX, int atY) {
@@ -149,7 +148,13 @@ void Game_selectInteraction(Game* game, int atX, int atY) {
     game->selectedStack = Game_locateStack(game, atX, atY);
     if (game->selectedCard != NULL) {
         if (game->selectedCard->isFaceDown) {
-            Card_flipUp(game->selectedCard);
+            Card* c = game->selectedCard;
+            Stack* s = game->selectedStack;
+
+            // Only let flip up when card on top of stack
+            if (c == &s->_cards[s->cards_count - 1]) {
+                Card_flipUp(c);
+            }
             game->selectedCard = NULL;
             game->selectedStack = NULL;
         } else {
