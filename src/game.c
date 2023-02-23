@@ -5,28 +5,36 @@
 // - move a chain of card from one stack to other
 
 Card* locateSelectedCard(Stack* fannedPiles, int atX, int atY) {
-    // Card* res = 
-    for (int pid = 0; pid < 7; pid++) {
-        int pileX = fannedPiles[pid].x_coordinate;
-        // fprintf(stderr, "%d\n", pid);
-        if (atX < pileX || atX > pileX + CARD_WIDTH) {
+    Stack* selectedPile = locateSelectedStack(fannedPiles, atX, atY);
+    if (selectedPile == NULL) return NULL;
+
+    for (int cid = selectedPile->cards_count - 1; cid > -1; cid--) {
+        Card *c = &(selectedPile->_cards[cid]);
+        if (atY < c->rect.y || atY > c->rect.y + CARD_HEIGHT) {
             continue;
         }
 
-        for (int cid = fannedPiles[pid].cards_count - 1; cid > -1; cid--) {
-            Card *c = &fannedPiles[pid]._cards[cid];
-            if (atY < c->rect.y || atY > c->rect.y + CARD_HEIGHT) {
-                continue;
-            }
-
-            return c;
-        }
+        return c;
     }
     return NULL;
 }
 
 Stack* locateSelectedStack(Stack* fannedPiles, int atX, int atY) {
+    for (int pid = 0; pid < 7; pid++) {
+        int pileX = fannedPiles[pid].x_coordinate;
+        int pileY = fannedPiles[pid].y_coordinate;
+        int pileCount = fannedPiles[pid].cards_count;
+        if (atX < pileX || atX > pileX + CARD_WIDTH) {
+            continue;
+        }
 
+        if (atY < pileY || atY > pileY + CARD_HEIGHT + STACK_DELTA * pileCount) {
+            continue;
+        }
+
+        return &fannedPiles[pid];
+    }
+    return NULL;
 }
 
 bool moveCardToStack(Card* card, Stack* pile) {
