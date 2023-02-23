@@ -1,13 +1,14 @@
 #include "game.h"
 
 // TODO:
-// - Implement deck and victory stacks
-// - Implement zero-delta stacks
+// - Implement face-down cards.
+// - Implement deck
 // - Implement drawable stacks
 // - Implement card-draw features.
 
-Card* locateSelectedCard(Game* game, int atX, int atY) {
-    Stack* selectedPile = locateSelectedStack(game, atX, atY);
+// This library handles game logic.
+Card* Game_locateCard(Game* game, int atX, int atY) {
+    Stack* selectedPile = Game_locateStack(game, atX, atY);
     if (selectedPile == NULL) return NULL;
 
     for (int cid = selectedPile->cards_count - 1; cid > -1; cid--) {
@@ -21,7 +22,7 @@ Card* locateSelectedCard(Game* game, int atX, int atY) {
     return NULL;
 }
 
-Stack* locateSelectedStack(Game* game, int atX, int atY) {
+Stack* Game_locateStack(Game* game, int atX, int atY) {
     for (int pid = 0; pid < 7; pid++) {
         int pileX1 = game->fannedPiles[pid].x1_coordinate;
         int pileX2 = game->fannedPiles[pid].x2_coordinate;
@@ -56,7 +57,7 @@ Stack* locateSelectedStack(Game* game, int atX, int atY) {
     return NULL;
 }
 
-bool moveCardToStack(Card* card, Stack* pileFrom, Stack* pileTo) {
+bool Game_moveCardBetweenStack(Card* card, Stack* pileFrom, Stack* pileTo) {
     if (pileFrom == pileTo) {
         fprintf(stderr, "Same pile!");
         return false;
@@ -90,7 +91,9 @@ bool moveCardToStack(Card* card, Stack* pileFrom, Stack* pileTo) {
     return true;
 }
 
-bool initGame(Game* game) {
+bool Game_initialize(Game* game) {
+    game->selectedCard = NULL;
+    game->selectedStack = NULL;
     // init fanned piles on tableau
     for (int pid = 0; pid < 7; pid++) {
         game->fannedPiles[pid].is_fanned = true;
@@ -133,9 +136,37 @@ bool initGame(Game* game) {
     return true;
 }
 
+void Game_selectInteraction(Game* game, int atX, int atY) {
+    if (game->selectedCard != NULL) {
+        Card_deselect(game->selectedCard);
+    }
+    // locate newly selected card:
+    game->selectedCard = Game_locateCard(game, atX, atY);
+    game->selectedStack = Game_locateStack(game, atX, atY);
+    if (game->selectedCard != NULL) {
+        Card_select(game->selectedCard);
+    }
+}
+void Game_moveInteraction(Game* game, int atX, int atY) {
+    Stack *targetStack = Game_locateStack(game, atX, atY);
+    if (game->selectedCard != NULL && targetStack != NULL) {
+        Game_moveCardBetweenStack(
+            game->selectedCard,
+            game->selectedStack,
+            targetStack
+        );
+        Card_deselect(game->selectedCard);
+        game->selectedStack = NULL;
+        game->selectedCard = NULL;
+    } else {
+        fprintf(stderr, "No card selected!\n");
+    }
+
+}
+
 bool Game_start(SDL_Renderer *renderer, int w, int h) {
     Game g = {0};
-    bool initial_success = initGame(&g);
+    bool initial_success = Game_initialize(&g);
     if (!initial_success) {
         fprintf(stderr, "Game not init successfully\n");
         fprintf(stderr, "%d%d\n", w, h);
@@ -153,9 +184,6 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
     // Event loop exit flag
     bool quit = false;
 
-    Card *selectedCard = NULL;
-    Stack *selectedStack = NULL;
-
     // Event loop
     while(!quit)
     {
@@ -172,27 +200,9 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
             } else if (e.type == SDL_MOUSEBUTTONDOWN) {
                 SDL_MouseButtonEvent mbe = e.button;
                 if (mbe.button == SDL_BUTTON_LEFT) {
-                    if (selectedCard != NULL) {
-                        Card_deselect(selectedCard);
-                        // selectedCard = NULL;
-                    }
-                    // locate newly selected card:
-                    selectedCard = locateSelectedCard(&g, mbe.x, mbe.y);
-                    selectedStack = locateSelectedStack(&g, mbe.x, mbe.y);
-                    if (selectedCard != NULL) {
-                        Card_select(selectedCard);
-                    }
+                    Game_selectInteraction(&g, mbe.x, mbe.y);
                 } else if (mbe.button == SDL_BUTTON_RIGHT) {
-                    // fprintf(stderr, "Right click\n");
-                    Stack *targetStack = locateSelectedStack(&g, mbe.x, mbe.y);
-                    if (selectedCard != NULL && targetStack != NULL) {
-                        moveCardToStack(selectedCard, selectedStack, targetStack);
-                        Card_deselect(selectedCard);
-                        selectedStack = NULL;
-                        selectedCard = NULL;
-                    } else {
-                        fprintf(stderr, "No card selected!\n");
-                    }
+                    Game_moveInteraction(&g, mbe.x, mbe.y);
                 }
             }
         }

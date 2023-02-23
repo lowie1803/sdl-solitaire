@@ -29,6 +29,8 @@ struct Card
   enum suit _suit;
   enum rank _rank;
   bool isSelected;
+  bool isFaceDown;
+  // Facedown game logic: left-click to faceup, only when top of stack.
 
   SDL_Rect rect;
   SDL_Color rectColor;

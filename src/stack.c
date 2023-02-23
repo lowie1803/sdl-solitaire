@@ -1,5 +1,6 @@
 #include "stack.h"
 
+// This library only handles display logic, NOT game logic.
 bool Stack_pushCard(Stack *stack, Card *card) {
   int ind = stack->cards_count;
   stack->_cards[ind] = *card;

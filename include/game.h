@@ -40,14 +40,21 @@
 struct Game {
   Stack fannedPiles[7];
   Stack foundationPiles[4];
+
+  Card* selectedCard;
+  Stack* selectedStack;
 };
 typedef struct Game Game;
 
 
 bool Game_start(SDL_Renderer *renderer, int w, int h);
-Card* locateSelectedCard(Game* game, int atX, int atY);
-Stack* locateSelectedStack(Game* game, int atX, int atY);
-bool moveCardToStack(Card* card, Stack* pileFrom, Stack *pileTo);
-bool initGame(Game* game);
+Card* Game_locateCard(Game* game, int atX, int atY);
+Stack* Game_locateStack(Game* game, int atX, int atY);
+bool Game_moveCardBetweenStack(Card* card, Stack* pileFrom, Stack *pileTo);
+bool Game_initialize(Game* game);
+
+// handle interactions
+void Game_selectInteraction(Game* game, int atX, int atY);
+void Game_moveInteraction(Game* game, int atX, int atY);
 
 #endif // GAME_H
