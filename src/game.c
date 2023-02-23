@@ -1,7 +1,6 @@
 #include "game.h"
 
 // TODO:
-// - select/deselect a card -> deselect current card before select other
 // - move a card from one stack to other
 // - move a chain of card from one stack to other
 
@@ -24,6 +23,14 @@ Card* locateSelectedCard(Stack* fannedPiles, int atX, int atY) {
         }
     }
     return NULL;
+}
+
+Stack* locateSelectedStack(Stack* fannedPiles, int atX, int atY) {
+
+}
+
+bool moveCardToStack(Card* card, Stack* pile) {
+    return true;
 }
 
 bool Game_start(SDL_Renderer *renderer, int w, int h) {
