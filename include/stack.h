@@ -68,4 +68,7 @@ void Stack_renderCard(Card *card, SDL_Renderer *renderer);
 void Card_select(Card *card);
 void Card_deselect(Card *card);
 
+void Card_flipUp(Card *card);
+void Card_flipDown(Card *card);
+
 #endif

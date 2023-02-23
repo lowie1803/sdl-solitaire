@@ -1,7 +1,6 @@
 #include "game.h"
 
 // TODO:
-// - Implement face-down cards.
 // - Implement deck
 // - Implement drawable stacks
 // - Implement card-draw features.
@@ -103,6 +102,11 @@ bool Game_initialize(Game* game) {
             Card temp;
             temp._suit = rand() % 4 + 1;
             temp._rank = rand() % 13 + 1;
+            if (cid < pid) {
+                temp.isFaceDown = true;
+            } else {
+                temp.isFaceDown = false;
+            }
             Stack_pushCard(&(game->fannedPiles[pid]), &temp);
         }
 
@@ -144,9 +148,16 @@ void Game_selectInteraction(Game* game, int atX, int atY) {
     game->selectedCard = Game_locateCard(game, atX, atY);
     game->selectedStack = Game_locateStack(game, atX, atY);
     if (game->selectedCard != NULL) {
-        Card_select(game->selectedCard);
+        if (game->selectedCard->isFaceDown) {
+            Card_flipUp(game->selectedCard);
+            game->selectedCard = NULL;
+            game->selectedStack = NULL;
+        } else {
+            Card_select(game->selectedCard);
+        }
     }
 }
+
 void Game_moveInteraction(Game* game, int atX, int atY) {
     Stack *targetStack = Game_locateStack(game, atX, atY);
     if (game->selectedCard != NULL && targetStack != NULL) {
