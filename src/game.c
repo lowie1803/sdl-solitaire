@@ -1,8 +1,10 @@
 #include "game.h"
 
 // TODO:
-// - move a card from one stack to other
-// - move a chain of card from one stack to other
+// - Implement deck and victory stacks
+// - Implement zero-delta stacks
+// - Implement drawable stacks
+// - Implement card-draw features.
 
 Card* locateSelectedCard(Stack* fannedPiles, int atX, int atY) {
     Stack* selectedPile = locateSelectedStack(fannedPiles, atX, atY);
@@ -21,14 +23,15 @@ Card* locateSelectedCard(Stack* fannedPiles, int atX, int atY) {
 
 Stack* locateSelectedStack(Stack* fannedPiles, int atX, int atY) {
     for (int pid = 0; pid < 7; pid++) {
-        int pileX = fannedPiles[pid].x_coordinate;
-        int pileY = fannedPiles[pid].y_coordinate;
-        int pileCount = fannedPiles[pid].cards_count;
-        if (atX < pileX || atX > pileX + CARD_WIDTH) {
+        int pileX1 = fannedPiles[pid].x1_coordinate;
+        int pileX2 = fannedPiles[pid].x2_coordinate;
+        int pileY1 = fannedPiles[pid].y1_coordinate;
+        int pileY2 = fannedPiles[pid].y2_coordinate;
+        if (atX < pileX1 || atX > pileX2) {
             continue;
         }
 
-        if (atY < pileY || atY > pileY + CARD_HEIGHT + STACK_DELTA * pileCount) {
+        if (atY < pileY1 || atY > pileY2) {
             continue;
         }
 
@@ -74,8 +77,9 @@ bool moveCardToStack(Card* card, Stack* pileFrom, Stack* pileTo) {
 bool Game_start(SDL_Renderer *renderer, int w, int h) {
     Stack fannedPiles[7] = {0};
     for (int pid = 0; pid < 7; pid++) {
-        fannedPiles[pid].x_coordinate = FIRST_PILE_X + pid * PILE_DISTANCE;
-        fannedPiles[pid].y_coordinate = FIRST_PILE_Y;
+        fannedPiles[pid].is_fanned = true;
+        fannedPiles[pid].x1_coordinate = FIRST_PILE_X + pid * PILE_DISTANCE;
+        fannedPiles[pid].y1_coordinate = FIRST_PILE_Y;
         for (int cid = 0; cid <= pid; cid++) {
             Card temp;
             temp._suit = rand() % 4 + 1;

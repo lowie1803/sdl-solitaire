@@ -11,7 +11,6 @@ bool Stack_popCard(Stack *stack) {
   int ind = stack->cards_count;
   if (ind <= 0) return false;
   ind--;
-  // stack->_cards[ind] = {0};
   stack->cards_count--;
   return true;
 }
@@ -39,7 +38,7 @@ bool Card_initDisplay(Card *card)
 
 bool Stack_initDisplay(Stack *stack)
 {
-  if (!stack->x_coordinate || !stack->y_coordinate)
+  if (!stack->x1_coordinate || !stack->y1_coordinate)
   {
     fprintf(stderr, "Stack dimensions not initialized !\n");
     return false;
@@ -49,6 +48,9 @@ bool Stack_initDisplay(Stack *stack)
     fprintf(stderr, "Stack counts is not appropriate !\n");
     return false;
   }
+
+  stack->x2_coordinate = stack->x1_coordinate + CARD_WIDTH;
+  stack->y2_coordinate = stack->y1_coordinate + (stack->cards_count - 1) * STACK_DELTA * stack->is_fanned + CARD_HEIGHT;
 
   // Init all cards
   for (int i = 0; i < stack->cards_count; i++) {
@@ -64,8 +66,8 @@ bool Stack_initDisplay(Stack *stack)
 
 void Stack_initCardDisplay(Stack *stack, Card *card, int offset) {
   Card_initDisplay(card);
-  card->rect.x = stack->x_coordinate;
-  card->rect.y = stack->y_coordinate + offset * STACK_DELTA;
+  card->rect.x = stack->x1_coordinate;
+  card->rect.y = stack->y1_coordinate + offset * STACK_DELTA * stack->is_fanned;
   card->border.x = card->rect.x - CARD_BORDER_WIDTH;
   card->border.y = card->rect.y - CARD_BORDER_WIDTH;
 }

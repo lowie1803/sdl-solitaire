@@ -42,9 +42,14 @@ struct Stack
 {
   Card _cards[MAX_CARDS_PER_STACK];
 
-  int x_coordinate;
-  int y_coordinate;
+  int x1_coordinate;
+  int y1_coordinate;
   int cards_count;
+  bool is_fanned;
+
+  // Will be initialized in Stack_initDisplay()
+  int x2_coordinate;
+  int y2_coordinate;
 };
 typedef struct Stack Stack;
 
