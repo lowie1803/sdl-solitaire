@@ -6,8 +6,8 @@
 // - Implement drawable stacks
 // - Implement card-draw features.
 
-Card* locateSelectedCard(Stack* fannedPiles, int atX, int atY) {
-    Stack* selectedPile = locateSelectedStack(fannedPiles, atX, atY);
+Card* locateSelectedCard(Game* game, int atX, int atY) {
+    Stack* selectedPile = locateSelectedStack(game, atX, atY);
     if (selectedPile == NULL) return NULL;
 
     for (int cid = selectedPile->cards_count - 1; cid > -1; cid--) {
@@ -21,12 +21,12 @@ Card* locateSelectedCard(Stack* fannedPiles, int atX, int atY) {
     return NULL;
 }
 
-Stack* locateSelectedStack(Stack* fannedPiles, int atX, int atY) {
+Stack* locateSelectedStack(Game* game, int atX, int atY) {
     for (int pid = 0; pid < 7; pid++) {
-        int pileX1 = fannedPiles[pid].x1_coordinate;
-        int pileX2 = fannedPiles[pid].x2_coordinate;
-        int pileY1 = fannedPiles[pid].y1_coordinate;
-        int pileY2 = fannedPiles[pid].y2_coordinate;
+        int pileX1 = game->fannedPiles[pid].x1_coordinate;
+        int pileX2 = game->fannedPiles[pid].x2_coordinate;
+        int pileY1 = game->fannedPiles[pid].y1_coordinate;
+        int pileY2 = game->fannedPiles[pid].y2_coordinate;
         if (atX < pileX1 || atX > pileX2) {
             continue;
         }
@@ -35,7 +35,23 @@ Stack* locateSelectedStack(Stack* fannedPiles, int atX, int atY) {
             continue;
         }
 
-        return &fannedPiles[pid];
+        return &(game->fannedPiles[pid]);
+    }
+
+    for (int pid = 0; pid < 4; pid++) {
+        int pileX1 = game->foundationPiles[pid].x1_coordinate;
+        int pileX2 = game->foundationPiles[pid].x2_coordinate;
+        int pileY1 = game->foundationPiles[pid].y1_coordinate;
+        int pileY2 = game->foundationPiles[pid].y2_coordinate;
+        if (atX < pileX1 || atX > pileX2) {
+            continue;
+        }
+
+        if (atY < pileY1 || atY > pileY2) {
+            continue;
+        }
+
+        return &(game->foundationPiles[pid]);
     }
     return NULL;
 }
@@ -74,26 +90,56 @@ bool moveCardToStack(Card* card, Stack* pileFrom, Stack* pileTo) {
     return true;
 }
 
-bool Game_start(SDL_Renderer *renderer, int w, int h) {
-    Stack fannedPiles[7] = {0};
+bool initGame(Game* game) {
+    // init fanned piles on tableau
     for (int pid = 0; pid < 7; pid++) {
-        fannedPiles[pid].is_fanned = true;
-        fannedPiles[pid].x1_coordinate = FIRST_PILE_X + pid * PILE_DISTANCE;
-        fannedPiles[pid].y1_coordinate = FIRST_PILE_Y;
+        game->fannedPiles[pid].is_fanned = true;
+        game->fannedPiles[pid].x1_coordinate = FIRST_PILE_X + pid * PILE_DISTANCE;
+        game->fannedPiles[pid].y1_coordinate = FIRST_PILE_Y;
         for (int cid = 0; cid <= pid; cid++) {
             Card temp;
             temp._suit = rand() % 4 + 1;
             temp._rank = rand() % 13 + 1;
-            Stack_pushCard(&fannedPiles[pid], &temp);
+            Stack_pushCard(&(game->fannedPiles[pid]), &temp);
         }
 
-        if(!Stack_initDisplay(&fannedPiles[pid]))
+        if(!Stack_initDisplay(&(game->fannedPiles[pid])))
         {
             fprintf(stderr, "Stack fail to initialize !\n");
-            fprintf(stderr, "%d%d\n", w, h);
             fprintf(stderr, "%d\n", pid);
             return false;
         }
+    }
+
+    // init foundation piles
+    for (int pid = 0; pid < 4; pid++) {
+        game->foundationPiles[pid].x1_coordinate = game->fannedPiles[pid + 3].x1_coordinate;
+        game->foundationPiles[pid].y1_coordinate = FIRST_PILE_Y - CARD_HEIGHT - STACK_DELTA;
+
+        for (int cid = 0; cid <= 0; cid++) {
+            Card temp;
+            temp._suit = pid+1;
+            temp._rank = 1;
+            Stack_pushCard(&(game->foundationPiles[pid]), &temp);
+        }
+
+        if(!Stack_initDisplay(&(game->foundationPiles[pid])))
+        {
+            fprintf(stderr, "Stack fail to initialize !\n");
+            fprintf(stderr, "%d\n", pid);
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Game_start(SDL_Renderer *renderer, int w, int h) {
+    Game g = {0};
+    bool initial_success = initGame(&g);
+    if (!initial_success) {
+        fprintf(stderr, "Game not init successfully\n");
+        fprintf(stderr, "%d%d\n", w, h);
+        return false;
     }
 
     // Initialize framerate manager : 30 FPS
@@ -131,14 +177,14 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
                         // selectedCard = NULL;
                     }
                     // locate newly selected card:
-                    selectedCard = locateSelectedCard(fannedPiles, mbe.x, mbe.y);
-                    selectedStack = locateSelectedStack(fannedPiles, mbe.x, mbe.y);
+                    selectedCard = locateSelectedCard(&g, mbe.x, mbe.y);
+                    selectedStack = locateSelectedStack(&g, mbe.x, mbe.y);
                     if (selectedCard != NULL) {
                         Card_select(selectedCard);
                     }
                 } else if (mbe.button == SDL_BUTTON_RIGHT) {
                     // fprintf(stderr, "Right click\n");
-                    Stack *targetStack = locateSelectedStack(fannedPiles, mbe.x, mbe.y);
+                    Stack *targetStack = locateSelectedStack(&g, mbe.x, mbe.y);
                     if (selectedCard != NULL && targetStack != NULL) {
                         moveCardToStack(selectedCard, selectedStack, targetStack);
                         Card_deselect(selectedCard);
@@ -154,9 +200,12 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
         // Set background color
         Utils_setBackgroundColor(renderer, COLOR_DARK_GRAY);
 
-        // Render grid
+        // Render piles
         for (int pid = 0; pid < 7; pid++) {
-            Stack_render(&fannedPiles[pid], renderer);
+            Stack_render(&(g.fannedPiles[pid]), renderer);
+        }
+        for (int pid = 0; pid < 4; pid++) {
+            Stack_render(&(g.foundationPiles[pid]), renderer);
         }
 
         // Show message

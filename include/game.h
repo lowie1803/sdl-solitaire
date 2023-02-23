@@ -37,9 +37,17 @@
 
 #include "stack.h"
 
+struct Game {
+  Stack fannedPiles[7];
+  Stack foundationPiles[4];
+};
+typedef struct Game Game;
+
 
 bool Game_start(SDL_Renderer *renderer, int w, int h);
-Stack* locateSelectedStack(Stack* fannedPiles, int atX, int atY);
+Card* locateSelectedCard(Game* game, int atX, int atY);
+Stack* locateSelectedStack(Game* game, int atX, int atY);
 bool moveCardToStack(Card* card, Stack* pileFrom, Stack *pileTo);
+bool initGame(Game* game);
 
 #endif // GAME_H
