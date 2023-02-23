@@ -37,7 +37,37 @@ Stack* locateSelectedStack(Stack* fannedPiles, int atX, int atY) {
     return NULL;
 }
 
-bool moveCardToStack(Card* card, Stack* pile) {
+bool moveCardToStack(Card* card, Stack* pileFrom, Stack* pileTo) {
+    if (pileFrom == pileTo) {
+        fprintf(stderr, "Same pile!");
+        return false;
+    }
+
+    int cardInd = 0;
+    while (cardInd < pileFrom->cards_count) {
+        if (&(pileFrom->_cards[cardInd]) == card) {
+            break;
+        }
+        cardInd++;
+    }
+
+    if (cardInd == pileFrom->cards_count) {
+        fprintf(stderr, "Card not found in pileFrom!");
+        return false;
+    }
+
+    for (int cind = cardInd; cind < pileFrom->cards_count; cind++) {
+        Stack_pushCard(pileTo, &(pileFrom->_cards[cind]));
+    }
+
+    while (cardInd < pileFrom->cards_count) {
+        Stack_popCard(pileFrom);
+    }
+
+    // re-assign display
+    Stack_initDisplay(pileFrom);
+    Stack_initDisplay(pileTo);
+
     return true;
 }
 
@@ -74,6 +104,7 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
     bool quit = false;
 
     Card *selectedCard = NULL;
+    Stack *selectedStack = NULL;
 
     // Event loop
     while(!quit)
@@ -90,13 +121,28 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
                 break;
             } else if (e.type == SDL_MOUSEBUTTONDOWN) {
                 SDL_MouseButtonEvent mbe = e.button;
-                if (selectedCard != NULL) Card_deselect(selectedCard);
                 if (mbe.button == SDL_BUTTON_LEFT) {
+                    if (selectedCard != NULL) {
+                        Card_deselect(selectedCard);
+                        // selectedCard = NULL;
+                    }
                     // locate newly selected card:
                     selectedCard = locateSelectedCard(fannedPiles, mbe.x, mbe.y);
-                    if (selectedCard != NULL) Card_select(selectedCard);
+                    selectedStack = locateSelectedStack(fannedPiles, mbe.x, mbe.y);
+                    if (selectedCard != NULL) {
+                        Card_select(selectedCard);
+                    }
                 } else if (mbe.button == SDL_BUTTON_RIGHT) {
-                    fprintf(stderr, "Right click\n");
+                    // fprintf(stderr, "Right click\n");
+                    Stack *targetStack = locateSelectedStack(fannedPiles, mbe.x, mbe.y);
+                    if (selectedCard != NULL && targetStack != NULL) {
+                        moveCardToStack(selectedCard, selectedStack, targetStack);
+                        Card_deselect(selectedCard);
+                        selectedStack = NULL;
+                        selectedCard = NULL;
+                    } else {
+                        fprintf(stderr, "No card selected!\n");
+                    }
                 }
             }
         }

@@ -49,6 +49,7 @@ struct Stack
 typedef struct Stack Stack;
 
 bool Stack_pushCard(Stack *stack, Card *card);
+bool Stack_popCard(Stack *stack);
 
 bool Card_initDisplay(Card *card);
 void Stack_initCardDisplay(Stack *stack, Card *card, int i);

@@ -40,6 +40,6 @@
 
 bool Game_start(SDL_Renderer *renderer, int w, int h);
 Stack* locateSelectedStack(Stack* fannedPiles, int atX, int atY);
-bool moveCardToStack(Card* card, Stack* pile);
+bool moveCardToStack(Card* card, Stack* pileFrom, Stack *pileTo);
 
 #endif // GAME_H

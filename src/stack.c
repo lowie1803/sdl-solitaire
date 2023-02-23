@@ -7,6 +7,15 @@ bool Stack_pushCard(Stack *stack, Card *card) {
   return true;
 }
 
+bool Stack_popCard(Stack *stack) {
+  int ind = stack->cards_count;
+  if (ind <= 0) return false;
+  ind--;
+  // stack->_cards[ind] = {0};
+  stack->cards_count--;
+  return true;
+}
+
 bool Card_initDisplay(Card *card)
 {
   if (!card->_suit || !card->_rank)
