@@ -38,6 +38,7 @@
 #include "stack.h"
 
 struct Game {
+  Deck deck;
   Stack fannedPiles[7];
   Stack foundationPiles[4];
 

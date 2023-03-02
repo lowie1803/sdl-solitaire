@@ -5,6 +5,14 @@
 // - Implement game logic
 
 // This library handles game logic.
+bool Game_locateDeck(Game* game, int atX, int atY) {
+    return 
+          (atX >= game->deck.x1_coordinate
+        && atX <= game->deck.x2_coordinate
+        && atY >= game->deck.y1_coordinate
+        && atY <= game->deck.y2_coordinate);
+}
+
 Card* Game_locateCard(Game* game, int atX, int atY) {
     Stack* selectedPile = Game_locateStack(game, atX, atY);
     if (selectedPile == NULL) return NULL;
@@ -92,6 +100,22 @@ bool Game_moveCardBetweenStack(Card* card, Stack* pileFrom, Stack* pileTo) {
 bool Game_initialize(Game* game) {
     game->selectedCard = NULL;
     game->selectedStack = NULL;
+    // init deck on tableau
+    game->deck.x1_coordinate = FIRST_PILE_X;
+    game->deck.y1_coordinate = FIRST_PILE_Y - CARD_HEIGHT - STACK_DELTA;
+    for (int cid = 0; cid < 15; cid++) {
+        Card temp;
+        temp._suit = rand() % 4 + 1;
+        temp._rank = rand() % 13 + 1;
+        temp.isFaceDown = true;
+        Deck_pushCard(&(game->deck), &temp);
+    }
+    if (!Deck_initDisplay(&(game->deck)))
+    {
+        fprintf(stderr, "Deck fail to initialize !\n");
+        return false;
+    }
+
     // init fanned piles on tableau
     for (int pid = 0; pid < 7; pid++) {
         game->fannedPiles[pid].is_fanned = true;
@@ -109,7 +133,7 @@ bool Game_initialize(Game* game) {
             Stack_pushCard(&(game->fannedPiles[pid]), &temp);
         }
 
-        if(!Stack_initDisplay(&(game->fannedPiles[pid])))
+        if (!Stack_initDisplay(&(game->fannedPiles[pid])))
         {
             fprintf(stderr, "Stack fail to initialize !\n");
             fprintf(stderr, "%d\n", pid);
@@ -129,7 +153,7 @@ bool Game_initialize(Game* game) {
             Stack_pushCard(&(game->foundationPiles[pid]), &temp);
         }
 
-        if(!Stack_initDisplay(&(game->foundationPiles[pid])))
+        if (!Stack_initDisplay(&(game->foundationPiles[pid])))
         {
             fprintf(stderr, "Stack fail to initialize !\n");
             fprintf(stderr, "%d\n", pid);
@@ -140,6 +164,10 @@ bool Game_initialize(Game* game) {
 }
 
 void Game_selectInteraction(Game* game, int atX, int atY) {
+    if (Game_locateDeck(game, atX, atY)) {
+        Deck_interact(&(game->deck));
+        return;
+    }
     if (game->selectedCard != NULL) {
         Card_deselect(game->selectedCard);
     }

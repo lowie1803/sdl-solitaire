@@ -55,6 +55,28 @@ struct Stack
 };
 typedef struct Stack Stack;
 
+struct Deck
+{
+  Card faceup[MAX_CARDS_PER_STACK];
+  Card facedown[MAX_CARDS_PER_STACK];
+
+  int x1_coordinate;
+  int y1_coordinate;
+  int faceup_count;
+  int facedown_count;
+
+  int x2_coordinate;
+  int y2_coordinate;
+};
+typedef struct Deck Deck;
+
+bool Deck_initDisplay(Deck *deck);
+bool Deck_pushCard(Deck *deck, Card *card);
+bool Deck_popCard(Deck *deck);
+bool Deck_interact(Deck *deck);
+void Deck_render(Deck *deck, SDL_Renderer *renderer);
+// void Deck_renderCard(Card *card, SDL_Renderer *renderer);
+
 bool Stack_pushCard(Stack *stack, Card *card);
 bool Stack_popCard(Stack *stack);
 
