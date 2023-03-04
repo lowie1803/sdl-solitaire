@@ -36,6 +36,7 @@
 #include <SDL2_gfxPrimitives.h>
 
 #include "stack.h"
+#include "deck.h"
 
 struct Game {
   Deck deck;

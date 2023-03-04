@@ -1,18 +1,27 @@
 #include "game.h"
 
 // TODO:
-// - Implement stock
+// - Add cards graphics.
 // - Implement game logic
+// - Note that game logic is integrated in some of this code.
+// But most of them only handle moving around currently.
+
+// The first thing to do is to randomly init 52 distinct cards, with 28
+// cards on the tableau, and the rest in the deck.
+
+// Next is to handle what can be stacked on each other in each fanned pile,
+// and what can only be put on empty fanned pile.
+
+// Next is to handle what can be put on foundation piles.
+
+// Last thing to do is to handle victory, and new game.
+
+// More features:
+// - Undo.
+// - Save & Load.
+// - Load a customized game (from text data).
 
 // This library handles game logic.
-bool Game_locateDeck(Game* game, int atX, int atY) {
-    return 
-          (atX >= game->deck.x1_coordinate
-        && atX <= game->deck.x2_coordinate
-        && atY >= game->deck.y1_coordinate
-        && atY <= game->deck.y2_coordinate);
-}
-
 Card* Game_locateCard(Game* game, int atX, int atY) {
     Stack* selectedPile = Game_locateStack(game, atX, atY);
     if (selectedPile == NULL) return NULL;
@@ -29,36 +38,24 @@ Card* Game_locateCard(Game* game, int atX, int atY) {
 }
 
 Stack* Game_locateStack(Game* game, int atX, int atY) {
+    if (Stack_isInbound(&(game->deck.facedown), atX, atY)) {
+        return &(game->deck.facedown);
+    }
+    if (Stack_isInbound(&(game->deck.faceup), atX, atY)) {
+        return &(game->deck.faceup);
+    }
     for (int pid = 0; pid < 7; pid++) {
-        int pileX1 = game->fannedPiles[pid].x1_coordinate;
-        int pileX2 = game->fannedPiles[pid].x2_coordinate;
-        int pileY1 = game->fannedPiles[pid].y1_coordinate;
-        int pileY2 = game->fannedPiles[pid].y2_coordinate;
-        if (atX < pileX1 || atX > pileX2) {
-            continue;
+        bool isInbound = Stack_isInbound(&(game->fannedPiles[pid]), atX, atY);
+        if (isInbound) {
+            return &(game->fannedPiles[pid]);
         }
-
-        if (atY < pileY1 || atY > pileY2) {
-            continue;
-        }
-
-        return &(game->fannedPiles[pid]);
     }
 
     for (int pid = 0; pid < 4; pid++) {
-        int pileX1 = game->foundationPiles[pid].x1_coordinate;
-        int pileX2 = game->foundationPiles[pid].x2_coordinate;
-        int pileY1 = game->foundationPiles[pid].y1_coordinate;
-        int pileY2 = game->foundationPiles[pid].y2_coordinate;
-        if (atX < pileX1 || atX > pileX2) {
-            continue;
+        bool isInbound = Stack_isInbound(&(game->foundationPiles[pid]), atX, atY);
+        if (isInbound) {
+            return &(game->foundationPiles[pid]);
         }
-
-        if (atY < pileY1 || atY > pileY2) {
-            continue;
-        }
-
-        return &(game->foundationPiles[pid]);
     }
     return NULL;
 }
@@ -164,16 +161,30 @@ bool Game_initialize(Game* game) {
 }
 
 void Game_selectInteraction(Game* game, int atX, int atY) {
-    if (Game_locateDeck(game, atX, atY)) {
-        Deck_interact(&(game->deck));
-        return;
-    }
     if (game->selectedCard != NULL) {
         Card_deselect(game->selectedCard);
     }
-    // locate newly selected card:
+    Stack* atStack = Game_locateStack(game, atX, atY);
+    if (atStack == NULL) {
+        return;
+    }
+    if (atStack == &(game->deck.facedown)) {
+        Deck_flip(&(game->deck));
+        return;
+    }
+    if (atStack == &(game->deck.faceup)) {
+        if (game->deck.faceup.cards_count == 0) {
+            return;
+        }
+        Card *card = &(game->deck.faceup._cards[game->deck.faceup.cards_count - 1]);
+        game->selectedCard = card;
+        game->selectedStack = atStack;
+        Card_select(card);
+        return;
+    }
+    // locate newly selected card on tableau:
     game->selectedCard = Game_locateCard(game, atX, atY);
-    game->selectedStack = Game_locateStack(game, atX, atY);
+    game->selectedStack = atStack;
     if (game->selectedCard != NULL) {
         if (game->selectedCard->isFaceDown) {
             Card* c = game->selectedCard;
@@ -193,6 +204,10 @@ void Game_selectInteraction(Game* game, int atX, int atY) {
 
 void Game_moveInteraction(Game* game, int atX, int atY) {
     Stack *targetStack = Game_locateStack(game, atX, atY);
+    if (targetStack == &(game->deck.facedown) || targetStack == &(game->deck.faceup)) {
+        fprintf(stderr, "Not allowed!");
+        return;
+    }
     if (game->selectedCard != NULL && targetStack != NULL) {
         Game_moveCardBetweenStack(
             game->selectedCard,
@@ -255,6 +270,7 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
         Utils_setBackgroundColor(renderer, COLOR_DARK_GRAY);
 
         // Render piles
+        Deck_render(&(g.deck), renderer);
         for (int pid = 0; pid < 7; pid++) {
             Stack_render(&(g.fannedPiles[pid]), renderer);
         }

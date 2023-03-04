@@ -15,88 +15,6 @@ bool Stack_popCard(Stack *stack) {
   return true;
 }
 
-bool Deck_pushCard(Deck *deck, Card *card) {
-  int ind = deck->facedown_count;
-  deck->facedown[ind] = *card;
-  deck->facedown_count++;
-  return true;
-}
-
-bool Deck_popCard(Deck *deck) {
-  int ind = deck->faceup_count;
-  if (ind <= 0) return false;
-  deck->faceup_count--;
-  return true;
-}
-
-bool Deck_interact(Deck *deck) {
-  int ind = deck->facedown_count;
-  if (ind == 0) {
-    int ind2 = deck->faceup_count;
-    if (ind2 == 0) return false;
-
-    while (ind2 > 0) {
-      ind2--;
-      deck->facedown[ind] = deck->faceup[ind2];
-      Card_flipDown(&(deck->facedown[ind]));
-      ind++;
-    }
-  } else {
-    deck->facedown_count--;
-    int ind2 = deck->faceup_count;
-    deck->faceup[ind2] = deck->facedown[ind];
-    Card_flipUp(&(deck->faceup[ind2]));
-    deck->faceup_count++;
-  }
-  return true;
-}
-
-bool Deck_initDisplay(Deck *deck) {
-  if (!deck->x1_coordinate || !deck->y1_coordinate)
-  {
-    fprintf(stderr, "Deck dimensions not initialized !\n");
-    return false;
-  }
-
-  deck->x2_coordinate = deck->x1_coordinate + CARD_WIDTH;
-  deck->y2_coordinate = deck->y1_coordinate + CARD_HEIGHT;
-
-  // Init only two cards on top of 2 piles
-  if (deck->facedown_count > 0) {
-    Card* card = &(deck->facedown[deck->facedown_count - 1]);
-    Card_initDisplay(card);
-    card->rect.x = deck->x1_coordinate;
-    card->rect.y = deck->y1_coordinate;
-    card->border.x = card->rect.x - CARD_BORDER_WIDTH;
-    card->border.y = card->rect.y - CARD_BORDER_WIDTH;
-  }
-
-  if (deck->faceup_count > 0) {
-    Card* card = &(deck->faceup[deck->faceup_count - 1]);
-    Card_initDisplay(card);
-    card->rect.x = deck->x1_coordinate + PILE_DISTANCE;
-    card->rect.y = deck->y1_coordinate;
-    card->border.x = card->rect.x - CARD_BORDER_WIDTH;
-    card->border.y = card->rect.y - CARD_BORDER_WIDTH;
-  }
-
-  return true;
-}
-
-void Deck_render(Deck *deck, SDL_Renderer *renderer) {
-  if (deck->faceup_count == 0) {
-    // TODO
-  } else {
-    Stack_renderCard(&(deck->faceup[deck->faceup_count - 1]), renderer);
-  }
-
-  if (deck->facedown_count == 0) {
-    // TODO
-  } else {
-    Stack_renderCard(&(deck->facedown[deck->facedown_count - 1]), renderer);
-  }
-}
-
 bool Card_initDisplay(Card *card)
 {
   if (!card->_suit || !card->_rank)
@@ -151,6 +69,16 @@ bool Stack_initDisplay(Stack *stack)
 
   return true;
 }
+
+bool Stack_isInbound(Stack *stack, int atX, int atY) {
+  return (
+    atX >= stack->x1_coordinate &&
+    atX <= stack->x2_coordinate &&
+    atY >= stack->y1_coordinate &&
+    atY <= stack->y2_coordinate
+  );
+}
+
 
 void Stack_initCardDisplay(Stack *stack, Card *card, int offset) {
   Card_initDisplay(card);
