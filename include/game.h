@@ -34,9 +34,11 @@
 #include <SDL.h>
 #include <SDL2_framerate.h>
 #include <SDL2_gfxPrimitives.h>
+#include <SDL2/SDL_image.h>
 
 #include "stack.h"
 #include "deck.h"
+#include "texture_handler.h"
 
 struct Game {
   Deck deck;

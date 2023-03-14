@@ -223,6 +223,8 @@ void Game_moveInteraction(Game* game, int atX, int atY) {
 
 }
 
+#define IMG_PATH "assets/full.png"
+
 bool Game_start(SDL_Renderer *renderer, int w, int h) {
     Game g = {0};
     bool initial_success = Game_initialize(&g);
@@ -239,6 +241,10 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
 
     // // Initialize start time (in ms)
     // long long last = Utils_time();
+
+    // Load texture
+    TextureHandler texHandler = {0};
+    TextureHandler_load(&texHandler, IMG_PATH, renderer);
 
     // Event loop exit flag
     bool quit = false;
