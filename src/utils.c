@@ -49,6 +49,8 @@ const SDL_Color COLOR_VIOLET        = {145, 0, 255, 255};
 
 const SDL_Color SUIT_TO_COLOR[5]    = {COLOR_WHITE, COLOR_PINK, COLOR_BLUE, COLOR_VIOLET, COLOR_ORANGE};
 
+TextureHandler TEX_HANDLER;
+
 void Utils_setBackgroundColor(SDL_Renderer *renderer, SDL_Color color)
 {
     // Initialize renderer color

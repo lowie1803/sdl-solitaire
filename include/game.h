@@ -38,7 +38,7 @@
 
 #include "stack.h"
 #include "deck.h"
-#include "texture_handler.h"
+#include "utils.h"
 
 struct Game {
   Deck deck;

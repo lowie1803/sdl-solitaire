@@ -38,6 +38,7 @@
 // Define screen dimensions
 #define SCREEN_WIDTH    800
 #define SCREEN_HEIGHT   600
+#define IMG_PATH "assets/full.png"
 
 int main(int argc, char* argv[])
 {
@@ -84,6 +85,7 @@ int main(int argc, char* argv[])
         }
         else
         {
+            TextureHandler_load(&TEX_HANDLER, IMG_PATH, renderer);
             // Start the game
             Game_start(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 

@@ -9,10 +9,9 @@ bool TextureHandler_load(TextureHandler* th, const char* filename, SDL_Renderer 
   SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surf);
   SDL_FreeSurface(surf);
   SDL_Texture* clip[clipPerColumn][clipPerRow];
-      // fprintf(stderr, "%d %d", width, height);
-  for(int i = 0; i < clipPerColumn; i++)
+  for (int i = 0; i < clipPerColumn; i++)
   {
-    for(int j = 0; j < clipPerRow; j++)
+    for (int j = 0; j < clipPerRow; j++)
     {
       clip[i][j] = SDL_CreateTexture(
         renderer,
@@ -44,7 +43,7 @@ bool TextureHandler_load(TextureHandler* th, const char* filename, SDL_Renderer 
 }
 
 SDL_Texture* TextureHandler_getFront(TextureHandler* th, int suit, int rank) {
-  return th->card_fronts[suit][rank];
+  return th->card_fronts[suit - 1][rank - 1];
 }
 SDL_Texture* TextureHandler_getBack(TextureHandler* th) {
   return th->card_back;

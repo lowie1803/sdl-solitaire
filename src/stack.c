@@ -27,15 +27,6 @@ bool Card_initDisplay(Card *card)
   card->rect.h = CARD_HEIGHT;
   card->border.w = CARD_WIDTH + CARD_BORDER_WIDTH * 2;
   card->border.h = CARD_HEIGHT + CARD_BORDER_WIDTH * 2;
-  if (card->isFaceDown) {
-    card->rectColor.r = 255;
-    card->rectColor.g = 255;
-    card->rectColor.b = 255;
-  } else {
-    card->rectColor.r = SUIT_TO_COLOR[card->_suit].r / card->_rank;
-    card->rectColor.g = SUIT_TO_COLOR[card->_suit].g / card->_rank;
-    card->rectColor.b = SUIT_TO_COLOR[card->_suit].b / card->_rank;
-  }
   card->borderColor.r = COLOR_GRAY.r;
   card->borderColor.g = COLOR_GRAY.g;
   card->borderColor.b = COLOR_GRAY.b;
@@ -134,14 +125,13 @@ void Stack_renderCard(Card *card, SDL_Renderer *renderer) {
   );
   SDL_RenderFillRect(renderer, &(card->border));
 
-  SDL_SetRenderDrawColor(
-    renderer,
-    card->rectColor.r,
-    card->rectColor.g,
-    card->rectColor.b,
-    card->rectColor.a
-  );
-  SDL_RenderFillRect(renderer, &(card->rect));
+  SDL_Texture* tex = NULL;
+  if (card->isFaceDown) {
+    tex = TextureHandler_getBack(&TEX_HANDLER);
+  } else {
+    tex = TextureHandler_getFront(&TEX_HANDLER, card->_suit, card->_rank);
+  }
+  SDL_RenderCopy(renderer, tex, NULL, &(card->rect));
 }
 
 void Card_select(Card *card) {
@@ -172,9 +162,6 @@ void Card_flipUp(Card *card) {
     return;
   }
   card->isFaceDown = false;
-  card->rectColor.r = SUIT_TO_COLOR[card->_suit].r / card->_rank;
-  card->rectColor.g = SUIT_TO_COLOR[card->_suit].g / card->_rank;
-  card->rectColor.b = SUIT_TO_COLOR[card->_suit].b / card->_rank;
 }
 
 void Card_flipDown(Card *card) {
@@ -183,7 +170,4 @@ void Card_flipDown(Card *card) {
     return;
   }
   card->isFaceDown = true;
-  card->rectColor.r = 255;
-  card->rectColor.g = 255;
-  card->rectColor.b = 255;
 }

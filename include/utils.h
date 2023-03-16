@@ -34,6 +34,7 @@
 #include <stdbool.h>
 
 #include <SDL.h>
+#include "texture_handler.h"
 
 
 // Define MAX and MIN macros
@@ -43,6 +44,7 @@
 
 #define COLOR_BREAKUP(COLOR)    COLOR.r, COLOR.g, COLOR.b, COLOR.a
 
+extern TextureHandler TEX_HANDLER;
 extern const SDL_Color COLOR_TRANSPARENT;
 extern const SDL_Color COLOR_BLACK;
 extern const SDL_Color COLOR_WHITE;

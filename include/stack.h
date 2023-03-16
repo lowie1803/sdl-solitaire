@@ -1,6 +1,5 @@
 #ifndef GRID_H
 #define GRID_H
-
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -15,8 +14,8 @@ enum rank {
 };
 
 #define MAX_CARDS_PER_STACK (52)
-#define CARD_HEIGHT (90)
-#define CARD_WIDTH (60)
+#define CARD_HEIGHT (91)
+#define CARD_WIDTH (65)
 #define CARD_BORDER_WIDTH (3)
 #define STACK_DELTA (25)
 

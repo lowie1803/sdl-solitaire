@@ -2,7 +2,6 @@
 #include <stdbool.h>
 
 #include <SDL.h>
-#include "utils.h"
 #include "stack.h"
 
 struct Deck {
