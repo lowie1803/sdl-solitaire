@@ -31,6 +31,17 @@ bool Deck_popCard(Deck *deck) {
   return true;
 }
 
+void Deck_shuffle(Deck *deck) {
+  srand(time(NULL));
+
+  for (int i = deck->facedown.cards_count - 1; i > 0; i--) {
+    int j = drand48() * (i + 1);
+    Card t = deck->facedown._cards[i];
+    deck->facedown._cards[i] = deck->facedown._cards[j];
+    deck->facedown._cards[j] = t;
+  }
+}
+
 bool Deck_flip(Deck *deck) {
   int ind = deck->facedown.cards_count;
   if (ind == 0) {

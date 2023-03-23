@@ -41,10 +41,11 @@ bool Klondike_isContainsCard(Stack *pile, Card *card) {
 }
 
 bool Klondike_isTableauMatched(Card *topOfDes, Card *botOfSrc) {
-  if (topOfDes->isFaceDown) return false;
   if (topOfDes == NULL) {
     return botOfSrc->_rank == KING;
   }
+  if (topOfDes->isFaceDown) return false;
+
   return (
     topOfDes->_rank == botOfSrc->_rank + 1
     && Card_isDiffColor(topOfDes, botOfSrc)

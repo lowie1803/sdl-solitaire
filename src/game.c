@@ -1,21 +1,8 @@
 #include "game.h"
 
 // TODO:
-// Refactor to handle click, drag
-// Handle game logic
-// - Implement game logic
-// - Note that game logic is integrated in some of this code.
-// But most of them only handle moving around currently.
-
-// The first thing to do is to randomly init 52 distinct cards, with 28
-// cards on the tableau, and the rest in the deck.
-
-// Next is to handle what can be stacked on each other in each fanned pile,
-// and what can only be put on empty fanned pile.
-
-// Next is to handle what can be put on foundation piles.
-
-// Last thing to do is to handle victory, and new game.
+// Load & init (Mode 2: load)
+// Handle Victory
 
 // More features:
 // - Undo.
@@ -94,19 +81,11 @@ bool Game_moveCardBetweenStack(Card* card, Stack* pileFrom, Stack* pileTo) {
     return true;
 }
 
-bool Game_initialize(Game* game) {
-    game->selectedCard = NULL;
-    game->selectedStack = NULL;
+bool Game_initDisplay(Game *game) {
     // init deck on tableau
     game->deck.x1_coordinate = FIRST_PILE_X;
     game->deck.y1_coordinate = FIRST_PILE_Y - CARD_HEIGHT - STACK_DELTA;
-    for (int cid = 0; cid < 15; cid++) {
-        Card temp;
-        temp._suit = rand() % 4 + 1;
-        temp._rank = rand() % 13 + 1;
-        temp.isFaceDown = true;
-        Deck_pushCard(&(game->deck), &temp);
-    }
+    
     if (!Deck_initDisplay(&(game->deck)))
     {
         fprintf(stderr, "Deck fail to initialize !\n");
@@ -118,17 +97,6 @@ bool Game_initialize(Game* game) {
         game->tableauPiles[pid].is_fanned = true;
         game->tableauPiles[pid].x1_coordinate = FIRST_PILE_X + pid * PILE_DISTANCE;
         game->tableauPiles[pid].y1_coordinate = FIRST_PILE_Y;
-        for (int cid = 0; cid <= pid; cid++) {
-            Card temp;
-            temp._suit = rand() % 4 + 1;
-            temp._rank = rand() % 13 + 1;
-            if (cid < pid) {
-                temp.isFaceDown = true;
-            } else {
-                temp.isFaceDown = false;
-            }
-            Stack_pushCard(&(game->tableauPiles[pid]), &temp);
-        }
 
         if (!Stack_initDisplay(&(game->tableauPiles[pid])))
         {
@@ -143,13 +111,6 @@ bool Game_initialize(Game* game) {
         game->foundationPiles[pid].x1_coordinate = game->tableauPiles[pid + 3].x1_coordinate;
         game->foundationPiles[pid].y1_coordinate = FIRST_PILE_Y - CARD_HEIGHT - STACK_DELTA;
 
-        for (int cid = 0; cid <= 0; cid++) {
-            Card temp;
-            temp._suit = pid+1;
-            temp._rank = 1;
-            Stack_pushCard(&(game->foundationPiles[pid]), &temp);
-        }
-
         if (!Stack_initDisplay(&(game->foundationPiles[pid])))
         {
             fprintf(stderr, "Stack fail to initialize !\n");
@@ -158,6 +119,35 @@ bool Game_initialize(Game* game) {
         }
     }
     return true;
+}
+
+bool Game_initialize(Game* game) {
+    game->selectedCard = NULL;
+    game->selectedStack = NULL;
+    // shuffle_mode
+    for (int i = 0; i < RANKS_COUNT; i++) {
+        for (int j = 0; j < SUITS_COUNT; j++) {
+            Card card;
+            card._rank = i + 1;
+            card._suit = j + 1;
+            Card_flipDown(&card);
+            Deck_pushCard(&(game->deck), &card);
+        }
+    }
+
+    Deck_shuffle(&(game->deck));
+
+    for (int pid = 0; pid < 7; pid++) {
+        for (int cid = 0; cid <= pid; cid++) {
+            int deckCount = game->deck.facedown.cards_count;
+            Stack_pushCard(&(game->tableauPiles[pid]), &(game->deck.facedown._cards[deckCount - 1]));
+            Stack_popCard(&(game->deck.facedown));
+        }
+        int tableauCardCount = game->tableauPiles[pid].cards_count;
+        Card_flipUp(&(game->tableauPiles[pid]._cards[tableauCardCount - 1]));
+    }
+
+    return Game_initDisplay(game);
 }
 
 

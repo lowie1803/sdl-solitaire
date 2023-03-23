@@ -55,6 +55,7 @@ typedef struct Game Game;
 Card* Game_locateCard(Game* game, int atX, int atY);
 Stack* Game_locateStack(Game* game, int atX, int atY);
 bool Game_moveCardBetweenStack(Card* card, Stack* pileFrom, Stack *pileTo);
+bool Game_initDisplay(Game* game);
 bool Game_initialize(Game* game);
 
 

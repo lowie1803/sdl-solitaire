@@ -2,6 +2,7 @@
 #include <stdbool.h>
 
 #include <SDL.h>
+#include <time.h>
 #include "stack.h"
 
 struct Deck {
@@ -16,6 +17,7 @@ typedef struct Deck Deck;
 bool Deck_initDisplay(Deck *deck);
 bool Deck_pushCard(Deck *deck, Card *card);
 bool Deck_popCard(Deck *deck);
+void Deck_shuffle(Deck *deck);
 bool Deck_flip(Deck *deck);
 void Deck_render(Deck *deck, SDL_Renderer *renderer);
 
