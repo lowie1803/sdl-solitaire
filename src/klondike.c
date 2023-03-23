@@ -124,5 +124,17 @@ bool Klondike_isMovable(Game *game, Card *srcCard, Stack *srcPile, Stack *desPil
 }
 
 bool Klondike_isVictory(Game *game) {
-  return game == NULL;
+  for (int pid = 0; pid < 4; pid++) {
+    if (game->foundationPiles[pid].cards_count != 13) {
+      return false;
+    }
+    
+    for (int cid = 1; cid < 13; cid++) {
+      if (game->foundationPiles[pid]._cards[cid]._suit != game->foundationPiles[pid]._cards[cid - 1]._suit) {
+        return false;
+      }
+    }
+  }
+  fprintf(stderr, "Victory!\n");
+  return true;
 }

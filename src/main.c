@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 #endif
 
     // Create window
-    SDL_Window *window = SDL_CreateWindow("Basic C SDL game",
+    SDL_Window *window = SDL_CreateWindow("Solitaire by low_",
                                           SDL_WINDOWPOS_UNDEFINED,
                                           SDL_WINDOWPOS_UNDEFINED,
                                           SCREEN_WIDTH, SCREEN_HEIGHT,

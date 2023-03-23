@@ -115,9 +115,15 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
 
         // Show message
         stringRGBA(renderer, 20, 20,
-                   "This is the Solitaire game display model",
+                   "Welcome to Solitaire",
                    COLOR_LIGHT_GRAY.r, COLOR_LIGHT_GRAY.g, COLOR_LIGHT_GRAY.b, COLOR_LIGHT_GRAY.a);
 
+        if (Klondike_isVictory(&g)) {
+            stringRGBA(renderer, 520, 20,
+                   "Victory!",
+                   COLOR_GREEN.r, COLOR_GREEN.g, COLOR_GREEN.b, COLOR_GREEN.a);
+        }
+        
         // Update screen
         SDL_RenderPresent(renderer);
 
