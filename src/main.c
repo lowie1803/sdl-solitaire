@@ -33,7 +33,7 @@
 
 #include <SDL.h>
 
-#include "game.h"
+#include "game_interface.h"
 
 // Define screen dimensions
 #define SCREEN_WIDTH    800

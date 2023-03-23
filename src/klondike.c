@@ -71,7 +71,7 @@ bool Klondike_isMovableTableauToTableau(Game *game, Card *srcCard, Stack *srcPil
     return false;
   }
   int desCardCount = desPile->cards_count;
-  Card *topOfDes = (desCardCount > 0 ? desPile->_cards[desCardCount - 1] : NULL);
+  Card *topOfDes = (desCardCount > 0 ? &(desPile->_cards[desCardCount - 1]) : NULL);
   return Klondike_isTableauMatched(topOfDes, srcCard);
 }
 // From non_tableau:
@@ -87,7 +87,7 @@ bool Klondike_isMovableNonTableauToTableau(Game *game, Card *srcCard, Stack *src
     return false;
   }
   int desCardCount = desPile->cards_count;
-  Card *topOfDes = (desCardCount > 0 ? desPile->_cards[desCardCount - 1] : NULL);
+  Card *topOfDes = (desCardCount > 0 ? &(desPile->_cards[desCardCount - 1]) : NULL);
   return Klondike_isTableauMatched(topOfDes, srcCard);
 }
 
@@ -102,7 +102,7 @@ bool Klondike_isMovableToFoundation(Game *game, Card *srcCard, Stack *srcPile, S
     return false;
   }
   int desCardCount = desPile->cards_count;
-  Card *topOfDes = (desCardCount > 0 ? desPile->_cards[desCardCount - 1] : NULL);
+  Card *topOfDes = (desCardCount > 0 ? &(desPile->_cards[desCardCount - 1]) : NULL);
   return Klondike_isFoundationMatched(topOfDes, srcCard);
 }
 
@@ -123,6 +123,5 @@ bool Klondike_isMovable(Game *game, Card *srcCard, Stack *srcPile, Stack *desPil
 }
 
 bool Klondike_isVictory(Game *game) {
-  // implement later
-  return false;
+  return game == NULL;
 }
