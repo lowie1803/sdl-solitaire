@@ -19,6 +19,17 @@ bool Card_initDisplay(Card *card)
   return true;
 }
 
+
+bool Card_isRed(Card *card) {
+  return (card->_suit == DIAMOND || card->_suit == HEART);
+}
+
+bool Card_isDiffColor(Card *card1, Card *card2) {
+  return (Card_isRed(card1) != Card_isRed(card2));
+}
+
+bool Card_isDiffColor(Card *card1, Card *card2);
+
 void Card_select(Card *card) {
   if (card == NULL) {
     fprintf(stderr, "Selected NULL value\n");

@@ -1,7 +1,6 @@
 #include "game.h"
 
 // TODO:
-// Refactor to have module "Card"
 // Refactor to handle click, drag
 // Handle game logic
 // - Implement game logic
@@ -23,7 +22,6 @@
 // - Save & Load.
 // - Load a customized game (from text data).
 
-// This library handles game logic.
 Card* Game_locateCard(Game* game, int atX, int atY) {
     Stack* selectedPile = Game_locateStack(game, atX, atY);
     if (selectedPile == NULL) return NULL;
@@ -47,9 +45,9 @@ Stack* Game_locateStack(Game* game, int atX, int atY) {
         return &(game->deck.faceup);
     }
     for (int pid = 0; pid < 7; pid++) {
-        bool isInbound = Stack_isInbound(&(game->fannedPiles[pid]), atX, atY);
+        bool isInbound = Stack_isInbound(&(game->tableauPiles[pid]), atX, atY);
         if (isInbound) {
-            return &(game->fannedPiles[pid]);
+            return &(game->tableauPiles[pid]);
         }
     }
 
@@ -117,9 +115,9 @@ bool Game_initialize(Game* game) {
 
     // init fanned piles on tableau
     for (int pid = 0; pid < 7; pid++) {
-        game->fannedPiles[pid].is_fanned = true;
-        game->fannedPiles[pid].x1_coordinate = FIRST_PILE_X + pid * PILE_DISTANCE;
-        game->fannedPiles[pid].y1_coordinate = FIRST_PILE_Y;
+        game->tableauPiles[pid].is_fanned = true;
+        game->tableauPiles[pid].x1_coordinate = FIRST_PILE_X + pid * PILE_DISTANCE;
+        game->tableauPiles[pid].y1_coordinate = FIRST_PILE_Y;
         for (int cid = 0; cid <= pid; cid++) {
             Card temp;
             temp._suit = rand() % 4 + 1;
@@ -129,10 +127,10 @@ bool Game_initialize(Game* game) {
             } else {
                 temp.isFaceDown = false;
             }
-            Stack_pushCard(&(game->fannedPiles[pid]), &temp);
+            Stack_pushCard(&(game->tableauPiles[pid]), &temp);
         }
 
-        if (!Stack_initDisplay(&(game->fannedPiles[pid])))
+        if (!Stack_initDisplay(&(game->tableauPiles[pid])))
         {
             fprintf(stderr, "Stack fail to initialize !\n");
             fprintf(stderr, "%d\n", pid);
@@ -142,7 +140,7 @@ bool Game_initialize(Game* game) {
 
     // init foundation piles
     for (int pid = 0; pid < 4; pid++) {
-        game->foundationPiles[pid].x1_coordinate = game->fannedPiles[pid + 3].x1_coordinate;
+        game->foundationPiles[pid].x1_coordinate = game->tableauPiles[pid + 3].x1_coordinate;
         game->foundationPiles[pid].y1_coordinate = FIRST_PILE_Y - CARD_HEIGHT - STACK_DELTA;
 
         for (int cid = 0; cid <= 0; cid++) {
@@ -206,11 +204,7 @@ void Game_selectInteraction(Game* game, int atX, int atY) {
 
 void Game_moveInteraction(Game* game, int atX, int atY) {
     Stack *targetStack = Game_locateStack(game, atX, atY);
-    if (targetStack == &(game->deck.facedown) || targetStack == &(game->deck.faceup)) {
-        fprintf(stderr, "Not allowed!");
-        return;
-    }
-    if (game->selectedCard != NULL && targetStack != NULL) {
+    if (Klondike_isMovable(game, game->selectedCard, game->selectedStack, targetStack)) {
         Game_moveCardBetweenStack(
             game->selectedCard,
             game->selectedStack,
@@ -220,9 +214,8 @@ void Game_moveInteraction(Game* game, int atX, int atY) {
         game->selectedStack = NULL;
         game->selectedCard = NULL;
     } else {
-        fprintf(stderr, "No card selected!\n");
+        fprintf(stderr, "Not allowed!");
     }
-
 }
 
 bool Game_start(SDL_Renderer *renderer, int w, int h) {
@@ -274,7 +267,7 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
         // Render piles
         Deck_render(&(g.deck), renderer);
         for (int pid = 0; pid < 7; pid++) {
-            Stack_render(&(g.fannedPiles[pid]), renderer);
+            Stack_render(&(g.tableauPiles[pid]), renderer);
         }
         for (int pid = 0; pid < 4; pid++) {
             Stack_render(&(g.foundationPiles[pid]), renderer);

@@ -39,10 +39,11 @@
 #include "stack.h"
 #include "deck.h"
 #include "utils.h"
+// #include "klondike.h"
 
 struct Game {
   Deck deck;
-  Stack fannedPiles[7];
+  Stack tableauPiles[7];
   Stack foundationPiles[4];
 
   Card* selectedCard;

@@ -33,6 +33,8 @@ struct Card
 typedef struct Card Card;
 
 bool Card_initDisplay(Card *card);
+bool Card_isRed(Card *card);
+bool Card_isDiffColor(Card *card1, Card *card2);
 
 void Card_select(Card *card);
 void Card_deselect(Card *card);
