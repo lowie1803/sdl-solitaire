@@ -98,6 +98,11 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
                 } else if (mbe.button == SDL_BUTTON_RIGHT) {
                     Game_moveInteraction(&g, mbe.x, mbe.y);
                 }
+            } else if (e.type == SDL_KEYDOWN) {
+                if (e.key.keysym.sym == SDLK_F2) {
+                    return false;
+                }
+                break;
             }
         }
 
@@ -121,7 +126,7 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
         }
         
         if (Klondike_isVictory(&g)) {
-            g.gameInfo = "Victory!";
+            g.gameInfo = "Victory! Press F2 to play new game!";
             g.gameInfoColor = COLOR_GREEN;
         }
         stringRGBA(renderer, 20, 20,

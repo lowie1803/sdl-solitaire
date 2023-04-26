@@ -47,7 +47,7 @@ const SDL_Color COLOR_ORANGE        = {255, 133, 0, 255};
 const SDL_Color COLOR_PINK          = {255, 0, 206, 255};
 const SDL_Color COLOR_VIOLET        = {145, 0, 255, 255};
 
-const char* INSTRUCTIONS[4] = {"Welcome to Solitaire!",
+const char* INSTRUCTIONS[4] = {"Welcome to Solitaire! Press F2 for new game.",
     "- Use LEFT-CLICK to SELECT;",
     "- RIGHT-CLICK to CHOOSE MOVE TARGET.",
     "Move cards between piles and complete the 4 foundation piles to win!"};

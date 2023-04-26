@@ -86,8 +86,11 @@ int main(int argc, char* argv[])
         else
         {
             TextureHandler_load(&TEX_HANDLER, IMG_PATH, renderer);
+            int game_no = 0;
             // Start the game
-            Game_start(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+            while (!Game_start(renderer, SCREEN_WIDTH, SCREEN_HEIGHT)) {
+                fprintf(stderr, "Game number %d", game_no++);
+            }
 
             // Destroy renderer
             SDL_DestroyRenderer(renderer);
