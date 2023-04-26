@@ -58,6 +58,7 @@ extern const SDL_Color COLOR_YELLOW;
 extern const SDL_Color COLOR_ORANGE;
 extern const SDL_Color COLOR_PINK;
 extern const SDL_Color COLOR_VIOLET;
+extern const char* INSTRUCTIONS[4];
 extern const SDL_Color SUIT_TO_COLOR[5];
 
 

@@ -47,6 +47,11 @@ const SDL_Color COLOR_ORANGE        = {255, 133, 0, 255};
 const SDL_Color COLOR_PINK          = {255, 0, 206, 255};
 const SDL_Color COLOR_VIOLET        = {145, 0, 255, 255};
 
+const char* INSTRUCTIONS[4] = {"Welcome to Solitaire!",
+    "- Use LEFT-CLICK to SELECT;",
+    "- RIGHT-CLICK to CHOOSE MOVE TARGET.",
+    "Move cards between piles and complete the 4 foundation piles to win!"};
+
 const SDL_Color SUIT_TO_COLOR[5]    = {COLOR_WHITE, COLOR_PINK, COLOR_BLUE, COLOR_VIOLET, COLOR_ORANGE};
 
 TextureHandler TEX_HANDLER;

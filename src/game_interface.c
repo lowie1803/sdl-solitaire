@@ -53,8 +53,11 @@ void Game_moveInteraction(Game* game, int atX, int atY) {
         Card_deselect(game->selectedCard);
         game->selectedStack = NULL;
         game->selectedCard = NULL;
+        game->gameInfo = "";
+        game->gameInfoColor = COLOR_WHITE;
     } else {
-        fprintf(stderr, "Not allowed!");
+        game->gameInfo = "Not allowed!";
+        game->gameInfoColor = COLOR_RED;
     }
 }
 
@@ -71,9 +74,6 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
     FPSmanager fpsmanager;
     SDL_initFramerate(&fpsmanager);
     SDL_setFramerate(&fpsmanager, 30);
-
-    // // Initialize start time (in ms)
-    // long long last = Utils_time();
 
     // Event loop exit flag
     bool quit = false;
@@ -113,16 +113,23 @@ bool Game_start(SDL_Renderer *renderer, int w, int h) {
             Stack_render(&(g.foundationPiles[pid]), renderer);
         }
 
-        // Show message
-        stringRGBA(renderer, 20, 20,
-                   "Welcome to Solitaire",
-                   COLOR_LIGHT_GRAY.r, COLOR_LIGHT_GRAY.g, COLOR_LIGHT_GRAY.b, COLOR_LIGHT_GRAY.a);
+        for (int i = 0; i < 4; i++) {
+            stringRGBA(renderer, 20, 520 + i * 20,
+                INSTRUCTIONS[i],
+                COLOR_LIGHT_GRAY.r, COLOR_LIGHT_GRAY.g, COLOR_LIGHT_GRAY.b, COLOR_LIGHT_GRAY.a);
 
-        if (Klondike_isVictory(&g)) {
-            stringRGBA(renderer, 520, 20,
-                   "Victory!",
-                   COLOR_GREEN.r, COLOR_GREEN.g, COLOR_GREEN.b, COLOR_GREEN.a);
         }
+        
+        if (Klondike_isVictory(&g)) {
+            g.gameInfo = "Victory!";
+            g.gameInfoColor = COLOR_GREEN;
+        }
+        stringRGBA(renderer, 20, 20,
+            "INFO: ",
+            g.gameInfoColor.r, g.gameInfoColor.g, g.gameInfoColor.b, g.gameInfoColor.a);
+        stringRGBA(renderer, 100, 20,
+            (g.gameInfo),
+            g.gameInfoColor.r, g.gameInfoColor.g, g.gameInfoColor.b, g.gameInfoColor.a);
         
         // Update screen
         SDL_RenderPresent(renderer);

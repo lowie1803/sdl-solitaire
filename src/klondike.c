@@ -135,6 +135,5 @@ bool Klondike_isVictory(Game *game) {
       }
     }
   }
-  fprintf(stderr, "Victory!\n");
   return true;
 }

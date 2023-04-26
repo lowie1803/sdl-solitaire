@@ -48,6 +48,9 @@ struct Game {
 
   Card* selectedCard;
   Stack* selectedStack;
+
+  char* gameInfo;
+  SDL_Color gameInfoColor;
 };
 typedef struct Game Game;
 

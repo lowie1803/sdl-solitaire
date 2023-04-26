@@ -147,6 +147,9 @@ bool Game_initialize(Game* game) {
         Card_flipUp(&(game->tableauPiles[pid]._cards[tableauCardCount - 1]));
     }
 
+    game->gameInfo = "";
+    game->gameInfoColor = COLOR_WHITE;
+
     return Game_initDisplay(game);
 }
 
