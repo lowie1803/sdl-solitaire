@@ -51,3 +51,5 @@ uncomment some instructions in the CMakeLists.txt file and re-execute the
 ### Open the project with an IDE under Linux
 
 See [IDE_USAGE.md](IDE_USAGE.md) for details.
+
+# MIDTERM DEMO: [](https://drive.google.com/file/d/1jtKv1SgVjiiGc9kZXDYYy0ZOPvjfIDzA/view?usp=sharing)
